@@ -1,0 +1,9 @@
+spring.application.name=AutoHub
+
+spring.datasource.url=jdbc:
+spring.datasource.username=
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.datasource.driver-class-name=org.postgresql.Driver
