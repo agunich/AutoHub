@@ -2,23 +2,22 @@ package com.alexgunich.repository;
 
 import com.alexgunich.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 /**
- * Репозиторий для работы с пользователями.
- * Использует JPA для работы с базой данных и Redis для кеширования.
+ * Repository for working with users.
+ * Uses JPA for database interaction and Redis for caching.
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
-     * Находит пользователя по его электронной почте с кешированием в Redis.
+     * Finds a user by their email with caching enabled in Redis.
      *
-     * @param email Электронная почта пользователя.
-     * @return Optional<User> С Optional, так как пользователь может не существовать.
+     * @param email the email of the user.
+     * @return an Optional containing the user if found, otherwise empty.
      */
     //FIXME  включить кэширование email при росте нагрузки!
     //@Cacheable(value = "userByEmail", key = "#email")

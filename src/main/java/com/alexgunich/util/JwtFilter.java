@@ -1,7 +1,10 @@
 package com.alexgunich.util;
 
-import io.jsonwebtoken.Claims;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +14,18 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Фильтр для обработки JWT токенов в запросах.
+ * Filter for processing JWT tokens in incoming requests.
+ * This filter intercepts requests to extract and validate JWT tokens,
+ * then establishes user authentication in the security context.
  */
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
     private final JwtUtil jwtUtil;
 
     @Autowired
@@ -31,39 +34,45 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Фильтрация запросов для проверки JWT.
+     * Filters requests to check the JWT token in the Authorization header.
+     * If the token is valid, it sets authentication for the user in the security context.
      *
-     * @param request запрос
-     * @param response ответ
-     * @param filterChain цепочка фильтров
-     * @throws ServletException ошибка фильтрации
-     * @throws IOException ошибка ввода/вывода
+     * @param request the HTTP request
+     * @param response the HTTP response
+     * @param filterChain the filter chain to pass the request and response
+     * @throws ServletException if the filter encounters an error
+     * @throws IOException if an I/O error occurs during the filter process
      */
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         final String token = request.getHeader("Authorization");
 
         String username = null;
         if (token != null && token.startsWith("Bearer ")) {
             try {
                 username = jwtUtil.extractUsername(token.substring(7));
+                logger.info("Extracted username: {}", username);
             } catch (Exception e) {
-                logger.error("Ошибка при извлечении имени пользователя из токена", e);
+                logger.error("Error extracting username from token", e);
             }
+        } else {
+            logger.warn("No Bearer token found in Authorization header");
         }
 
+        // If the username is extracted and no authentication is set, validate the token
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.validateToken(token.substring(7), username)) {
-                // Если токен валиден, установить аутентификацию в контексте безопасности
-                var authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                logger.info("Установлена аутентификация для пользователя: " + username);
-            } else {
-                logger.error("Токен невалиден для пользователя: " + username);
+            try {
+                if (jwtUtil.validateToken(token.substring(7), username)) {
+                    // If the token is valid, set the authentication in the security context
+                    var authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    logger.info("Authentication set for user: {}", username);
+                } else {
+                    logger.error("Invalid token for user: {}", username);
+                }
+            } catch (Exception e) {
+                logger.error("Error during token validation for user: {}", username, e);
             }
         }
 

@@ -10,9 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,11 +23,13 @@ public class SecurityConfig {
 
     private final UserService userService;
     private final JwtFilter jwtFilter;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public SecurityConfig(UserService userService, JwtFilter jwtFilter) {
+    public SecurityConfig(UserService userService, JwtFilter jwtFilter, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.jwtFilter = jwtFilter;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -43,7 +43,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
 
@@ -67,15 +67,5 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);  // Добавляем фильтр JWT
 
         return http.build();
-    }
-
-    /**
-     * Создание пароля шифрования для пользователей.
-     *
-     * @return PasswordEncoder
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
