@@ -1,6 +1,5 @@
 package com.alexgunich.service;
 
-import com.alexgunich.dto.FavoriteDto;
 import com.alexgunich.model.Favorite;
 import com.alexgunich.repository.FavoriteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Сервисный класс для работы с избранными автомобилями.
@@ -27,26 +25,22 @@ public class FavoriteService {
 
     /**
      * Получить все записи в избранном с кешированием.
-     * @return список DTO избранных записей.
+     * @return список избранных записей.
      */
     @Cacheable(value = "favorites", key = "'allFavorites'")
-    public List<FavoriteDto> getAllFavorites() {
-        List<Favorite> favorites = favoriteRepository.findAll();
-        return favorites.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<Favorite> getAllFavorites() {
+        return favoriteRepository.findAll();
     }
 
     /**
      * Получить запись избранного по ID с кешированием.
      * @param id идентификатор записи.
-     * @return DTO избранной записи.
+     * @return сущность избранной записи.
      */
     @Cacheable(value = "favorites", key = "#id")
-    public FavoriteDto getFavoriteById(Long id) {
-        Favorite favorite = favoriteRepository.findById(id)
+    public Favorite getFavoriteById(Long id) {
+        return favoriteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Favorite not found"));
-        return convertToDto(favorite);
     }
 
     /**
@@ -67,18 +61,5 @@ public class FavoriteService {
     @CacheEvict(value = "favorites", key = "#id")  // Очистка кеша для конкретной записи
     public void deleteFavorite(Long id) {
         favoriteRepository.deleteById(id);
-    }
-
-    /**
-     * Преобразовать сущность в DTO.
-     * @param favorite сущность избранного.
-     * @return DTO избранной записи.
-     */
-    private FavoriteDto convertToDto(Favorite favorite) {
-        return new FavoriteDto(
-                favorite.getId(),
-                favorite.getUser().getId(),
-                favorite.getCar().getId()
-        );
     }
 }

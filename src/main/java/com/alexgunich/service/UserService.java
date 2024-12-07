@@ -1,6 +1,5 @@
 package com.alexgunich.service;
 
-import com.alexgunich.dto.UserDto;
 import com.alexgunich.model.User;
 import com.alexgunich.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**
@@ -46,20 +44,12 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    // Дополнительные методы для работы с пользователями
-    public User save(User user) {
-        return userRepository.save(user);
-    }
-
     /**
      * Получить всех пользователей
      * @return список DTO пользователей
      */
-    public List<UserDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(this::convertToDto) // Преобразуем сущности в DTO
-                .collect(Collectors.toList());
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     /**
@@ -67,24 +57,9 @@ public class UserService implements UserDetailsService {
      * @param id идентификатор пользователя
      * @return DTO пользователя
      */
-    public UserDto getUserById(Long id) {
-        User user = userRepository.findById(id)
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return convertToDto(user);
-    }
-
-    /**
-     * Преобразовать сущность в DTO
-     * @param user сущность пользователя
-     * @return DTO пользователя
-     */
-    private UserDto convertToDto(User user) {
-        return new UserDto(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getRole().name()
-        );
     }
 
     /**

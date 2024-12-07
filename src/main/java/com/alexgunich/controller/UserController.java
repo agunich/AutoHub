@@ -3,11 +3,14 @@ package com.alexgunich.controller;
 import com.alexgunich.dto.UserDto;
 import com.alexgunich.model.User;
 import com.alexgunich.service.UserService;
+import com.alexgunich.util.DtoConverter;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер для работы с пользователями.
@@ -18,10 +21,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final DtoConverter dtoConverter;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DtoConverter dtoConverter) {
         this.userService = userService;
+        this.dtoConverter = dtoConverter;
     }
 
     /**
@@ -30,7 +35,9 @@ public class UserController {
      */
     @GetMapping
     public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+        return userService.getAllUsers().stream()
+                .map(user -> dtoConverter.convertToDto(user, UserDto.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -40,7 +47,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+        return dtoConverter.convertToDto(userService.getUserById(id), UserDto.class);
     }
 
     /**
@@ -50,8 +57,10 @@ public class UserController {
      * @return созданный пользователь.
      */
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public User createUser(@RequestBody @Valid UserDto userDto) {
+        return userService.createUser(
+                dtoConverter.convertToEntity(userDto, User.class)
+        );
     }
 
     /**

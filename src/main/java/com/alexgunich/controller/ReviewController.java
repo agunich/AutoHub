@@ -3,12 +3,13 @@ package com.alexgunich.controller;
 import com.alexgunich.dto.ReviewDto;
 import com.alexgunich.model.Review;
 import com.alexgunich.service.ReviewService;
+import com.alexgunich.util.DtoConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер для работы с отзывами.
@@ -18,19 +19,24 @@ import java.util.Optional;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final DtoConverter dtoConverter;
 
     @Autowired
-    public ReviewController(ReviewService reviewService) {
+    public ReviewController(ReviewService reviewService, DtoConverter dtoConverter) {
         this.reviewService = reviewService;
+        this.dtoConverter = dtoConverter;
     }
 
     /**
      * Получить все отзывы
-     * @return список DTO отзывов
+     * @return DTO список отзывов
      */
     @GetMapping
     public List<ReviewDto> getAllReviews() {
-        return reviewService.getAllReviews();
+        List<Review> reviews = reviewService.getAllReviews();
+        return reviews.stream()
+                .map(review -> dtoConverter.convertToDto(review, ReviewDto.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -40,18 +46,19 @@ public class ReviewController {
      */
     @GetMapping("/{id}")
     public ReviewDto getReviewById(@PathVariable Long id) {
-        return reviewService.getReviewById(id);
+        return dtoConverter.convertToDto(reviewService.getReviewById(id), ReviewDto.class);
     }
 
     /**
      * Создать новый отзыв.
      *
      * @param review данные нового отзыва.
-     * @return созданный отзыв.
+     * @return status 201 - объект создан.
      */
     @PostMapping
-    public Review createReview(@RequestBody Review review) {
-        return reviewService.createReview(review);
+    public ResponseEntity<Void> createReview(@RequestBody Review review) {
+        reviewService.createReview(review);
+        return ResponseEntity.status(201).build();
     }
 
     /**
