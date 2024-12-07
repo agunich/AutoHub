@@ -24,7 +24,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-	//For work with Json
+	// Model mapper for working with dto's
+	implementation 'org.modelmapper:modelmapper:3.2.2'
+
+	// For work with Json
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	// Database
