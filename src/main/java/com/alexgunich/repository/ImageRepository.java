@@ -1,24 +1,24 @@
 package com.alexgunich.repository;
 
 import com.alexgunich.model.Image;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
- * Репозиторий для работы с изображениями автомобилей.
- * Использует Redis для кеширования.
+ * Repository for working with car images.
+ * Uses Redis for caching.
  */
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
     /**
-     * Находит все изображения по ID автомобиля с кешированием в Redis.
+     * Finds all images associated with a car by its ID, with caching in Redis.
      *
-     * @param carId ID автомобиля.
-     * @return Список изображений, связанных с данным автомобилем.
+     * @param carId the ID of the car.
+     * @return a list of images associated with the given car.
      */
     @Cacheable(value = "imagesByCar", key = "#carId")
     List<Image> findByCarId(Long carId);

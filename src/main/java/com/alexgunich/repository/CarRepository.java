@@ -8,59 +8,59 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Репозиторий для работы с автомобилями.
- * Использует JPA для стандартных операций.
+ * Repository for working with cars.
+ * Uses JPA for standard operations such as CRUD.
  */
 @Repository
 public interface CarRepository extends JpaRepository<Car, Long> {
 
     /**
-     * Находит автомобили по марке.
+     * Finds cars by brand.
      *
-     * @param brand Марка автомобиля.
-     * @return Список автомобилей с заданной маркой.
+     * @param brand the brand of the car.
+     * @return a list of cars with the given brand.
      */
     List<Car> findByBrand(String brand);
 
     /**
-     * Находит автомобили по модели.
+     * Finds cars by model.
      *
-     * @param model Модель автомобиля.
-     * @return Список автомобилей с заданной моделью.
+     * @param model the model of the car.
+     * @return a list of cars with the given model.
      */
     List<Car> findByModel(String model);
 
     /**
-     * Находит автомобили по году выпуска.
+     * Finds cars by manufacturing year.
      *
-     * @param year Год выпуска автомобиля.
-     * @return Список автомобилей с заданным годом выпуска.
+     * @param year the year of manufacture.
+     * @return a list of cars with the given year of manufacture.
      */
     List<Car> findByYear(int year);
 
     /**
-     * Находит автомобили в пределах заданного диапазона цены.
+     * Finds cars within a given price range.
      *
-     * @param minPrice Минимальная цена.
-     * @param maxPrice Максимальная цена.
-     * @return Список автомобилей в пределах диапазона цен.
+     * @param minPrice the minimum price.
+     * @param maxPrice the maximum price.
+     * @return a list of cars within the given price range.
      */
     List<Car> findByPriceBetween(double minPrice, double maxPrice);
 
     /**
-     * Находит автомобили в пределах заданного диапазона пробега.
+     * Finds cars within a given mileage range.
      *
-     * @param minMileage Минимальный пробег.
-     * @param maxMileage Максимальный пробег.
-     * @return Список автомобилей в пределах диапазона пробега.
+     * @param minMileage the minimum mileage.
+     * @param maxMileage the maximum mileage.
+     * @return a list of cars within the given mileage range.
      */
     List<Car> findByMileageBetween(double minMileage, double maxMileage);
 
     /**
-     * Находит автомобиль по его ID.
+     * Finds a car by its ID.
      *
-     * @param id ID автомобиля.
-     * @return Optional<Car> С Optional, так как автомобиль может не существовать.
+     * @param id the ID of the car.
+     * @return an Optional containing the car, or an empty Optional if not found.
      */
     Optional<Car> findById(Long id);
 }

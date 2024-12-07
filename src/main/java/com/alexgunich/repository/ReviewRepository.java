@@ -7,25 +7,25 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Репозиторий для работы с отзывами на автомобили.
- * Предоставляет методы для сохранения и поиска отзывов.
+ * Repository for working with car reviews.
+ * Provides methods for saving and retrieving reviews.
  */
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     /**
-     * Находит все отзывы по ID автомобиля.
+     * Finds all reviews associated with a car by its ID.
      *
-     * @param carId ID автомобиля.
-     * @return Список отзывов, связанных с данным автомобилем.
+     * @param carId the ID of the car.
+     * @return a list of reviews associated with the given car.
      */
     List<Review> findByCarId(Long carId);
 
     /**
-     * Находит все отзывы по ID пользователя.
+     * Finds all reviews written by a user by their ID.
      *
-     * @param userId ID пользователя.
-     * @return Список отзывов, написанных данным пользователем.
+     * @param userId the ID of the user.
+     * @return a list of reviews written by the given user.
      */
     List<Review> findByUserId(Long userId);
 }
