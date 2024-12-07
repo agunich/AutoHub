@@ -1,14 +1,11 @@
 package com.alexgunich.service;
 
-import com.alexgunich.dto.ReviewDto;
 import com.alexgunich.model.Review;
 import com.alexgunich.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Сервисный класс для работы с отзывами.
@@ -25,40 +22,20 @@ public class ReviewService {
 
     /**
      * Получить все отзывы
-     * @return список DTO отзывов
+     * @return список отзывов
      */
-    public List<ReviewDto> getAllReviews() {
-        List<Review> reviews = reviewRepository.findAll();
-        return reviews.stream()
-                .map(this::convertToDto) // Преобразуем сущности в DTO
-                .collect(Collectors.toList());
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAll();
     }
 
     /**
      * Получить отзыв по ID
      * @param id идентификатор отзыва
-     * @return DTO отзыва
+     * @return сущность отзыва
      */
-    public ReviewDto getReviewById(Long id) {
-        Review review = reviewRepository.findById(id)
+    public Review getReviewById(Long id) {
+        return reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
-        return convertToDto(review);
-    }
-
-    /**
-     * Преобразовать сущность отзыва в DTO
-     * @param review сущность отзыва
-     * @return DTO отзыва
-     */
-    private ReviewDto convertToDto(Review review) {
-        return new ReviewDto(
-                review.getId(),
-                review.getUser().getId(),
-                review.getCar().getId(),
-                review.getRating(),
-                review.getComment(),
-                review.getCreatedAt()
-        );
     }
 
     /**

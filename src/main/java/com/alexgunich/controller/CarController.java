@@ -2,14 +2,15 @@ package com.alexgunich.controller;
 
 import com.alexgunich.dto.CarDto;
 import com.alexgunich.model.Car;
-//import com.alexgunich.search.CarElasticsearch;
-//import com.alexgunich.search.CarSearchService;
 import com.alexgunich.service.CarService;
+import com.alexgunich.util.DtoConverter;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер для работы с автомобилями.
@@ -20,12 +21,12 @@ import java.util.List;
 public class CarController {
 
     private final CarService carService;
-//    private final CarSearchService carSearchService;
+    private final DtoConverter dtoConverter;
 
     @Autowired
-    public CarController(CarService carService) { // <- insert CarSearchService carSearchService
+    public CarController(CarService carService, DtoConverter dtoConverter) {
         this.carService = carService;
-//        this.carSearchService = carSearchService;
+        this.dtoConverter = dtoConverter;
     }
 
     /**
@@ -35,7 +36,10 @@ public class CarController {
      */
     @GetMapping
     public List<CarDto> getAllCars() {
-        return carService.getAllCars();
+        List<Car> cars = carService.getAllCars();
+        return cars.stream()
+                .map(car -> dtoConverter.convertToDto(car, CarDto.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -46,18 +50,21 @@ public class CarController {
      */
     @GetMapping("/{id}")
     public CarDto getCarById(@PathVariable Long id) {
-        return carService.getCarById(id);
+        return dtoConverter.convertToDto(
+                carService.getCarById(id), CarDto.class
+        );
     }
 
     /**
      * Создать новый автомобиль.
      *
-     * @param car данные нового автомобиля.
-     * @return созданный автомобиль.
+     * @param carDto данные нового автомобиля.
+     * @return status 201 - объект создан.
      */
     @PostMapping
-    public Car createCar(@RequestBody Car car) {
-        return carService.createCar(car);
+    public ResponseEntity<Void> createCar(@RequestBody @Valid CarDto carDto) {
+        carService.createCar(dtoConverter.convertToEntity(carDto, Car.class));
+        return ResponseEntity.status(201).build();
     }
 
     /**
@@ -71,31 +78,4 @@ public class CarController {
         carService.deleteCar(id);
         return ResponseEntity.noContent().build();
     }
-
-//    /**
-//     * Эндпоинт для поиска автомобилей с динамическими фильтрами.
-//     *
-//     * @param brand      марка автомобиля (необязательно).
-//     * @param model      модель автомобиля (необязательно).
-//     * @param minYear    минимальный год выпуска (необязательно).
-//     * @param maxYear    максимальный год выпуска (необязательно).
-//     * @param minPrice   минимальная цена (необязательно).
-//     * @param maxPrice   максимальная цена (необязательно).
-//     * @param minMileage минимальный пробег (необязательно).
-//     * @param maxMileage максимальный пробег (необязательно).
-//     * @return список найденных автомобилей.
-//     */
-//    @GetMapping
-//    public List<CarElasticsearch> searchCars(
-//            @RequestParam(required = false) String brand,
-//            @RequestParam(required = false) String model,
-//            @RequestParam(required = false) Integer minYear,
-//            @RequestParam(required = false) Integer maxYear,
-//            @RequestParam(required = false) Double minPrice,
-//            @RequestParam(required = false) Double maxPrice,
-//            @RequestParam(required = false) Double minMileage,
-//            @RequestParam(required = false) Double maxMileage
-//    ) {
-//        return carSearchService.searchCars(brand, model, minYear, maxYear, minPrice, maxPrice, minMileage, maxMileage);
-//    }
 }

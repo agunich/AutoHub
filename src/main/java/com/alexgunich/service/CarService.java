@@ -3,6 +3,7 @@ package com.alexgunich.service;
 import com.alexgunich.dto.CarDto;
 import com.alexgunich.model.Car;
 import com.alexgunich.repository.CarRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,46 +29,23 @@ public class CarService {
     /**
      * Получить все автомобили с кешированием в Redis.
      *
-     * @return список DTO автомобилей.
+     * @return список автомобилей.
      */
     @Cacheable(value = "cars", key = "'allCars'")
-    public List<CarDto> getAllCars() {
-        List<Car> cars = carRepository.findAll();
-        return cars.stream()
-                .map(this::convertToDto) // Преобразуем сущности в DTO
-                .collect(Collectors.toList());
+    public List<Car> getAllCars() {
+        return carRepository.findAll();
     }
 
     /**
      * Получить автомобиль по ID с кешированием.
      *
      * @param id идентификатор автомобиля.
-     * @return DTO автомобиля.
+     * @return сущность автомобиля.
      */
     @Cacheable(value = "cars", key = "#id")
-    public CarDto getCarById(Long id) {
-        Car car = carRepository.findById(id)
+    public Car getCarById(Long id) {
+        return carRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Car not found"));
-        return convertToDto(car);
-    }
-
-    /**
-     * Преобразовать сущность автомобиля в DTO.
-     *
-     * @param car сущность автомобиля.
-     * @return DTO автомобиля.
-     */
-    private CarDto convertToDto(Car car) {
-        return new CarDto(
-                car.getId(),
-                car.getBrand(),
-                car.getModel(),
-                car.getYear(),
-                car.getPrice(),
-                car.getStatus().name(),
-                car.getCreatedAt(),
-                car.getUpdatedAt()
-        );
     }
 
     /**

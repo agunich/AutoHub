@@ -58,7 +58,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll() // Разрешаем доступ к этим маршрутам
+//                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll() // Разрешаем доступ к этим маршрутам
+                // FIXME перед пулом на основную ветку откатить POST методы на маршруты "/auth/login", "/auth/register" !
+                .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/**").permitAll()  // Разрешаем доступ ко всем GET-запросам
                 .anyRequest().authenticated()  // Все остальные запросы требуют аутентификации
                 .and()
