@@ -1,4 +1,4 @@
-//package com.alexgunich.config;
+package com.alexgunich.config;//package com.alexgunich.config;
 //
 //import org.apache.http.HttpHost;
 //import org.elasticsearch.client.RequestConfigCallback;

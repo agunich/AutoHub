@@ -1,4 +1,4 @@
-//package com.alexgunich.search;
+package com.alexgunich.search;//package com.alexgunich.search;
 //
 //import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 //import org.springframework.stereotype.Repository;

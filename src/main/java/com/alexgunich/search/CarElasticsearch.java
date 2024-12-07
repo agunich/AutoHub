@@ -1,4 +1,4 @@
-//package com.alexgunich.search;
+package com.alexgunich.search;//package com.alexgunich.search;
 //
 //import lombok.Data;
 //import org.springframework.data.annotation.Id;

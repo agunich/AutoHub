@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.4.0'
-	id 'io.spring.dependency-management' version '1.1.6'
+	id 'org.springframework.boot' version '3.0.0'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
 group = 'com.alexgunich'
@@ -18,9 +18,56 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
+	// Spring Boot Dependencies
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	//For work with Json
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// Database
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.postgresql:postgresql' // PostgreSQL драйвер
+
+	// For JWT Token Authentication
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// For Elasticsearch
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch:3.4.0'
+
+	// For testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.mockito:mockito-core:4.0.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+	// For image upload handling (optional)
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// For Redis (optional caching)
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// For validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// If you want to use MapStruct for object mapping (optional)
+	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+
+	// Lombok - generate getters/setter/constructors and etc stuff
+	compileOnly 'org.projectlombok:lombok:1.18.36'
+	annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+	// minIO cloud storage
+	implementation 'io.minio:minio:8.5.14'
+
+	// Kafka
+	implementation 'org.springframework.kafka:spring-kafka:3.0.0'
+	implementation 'org.apache.kafka:kafka-clients:3.0.0'
 }
 
 tasks.named('test') {
