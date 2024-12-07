@@ -4,6 +4,7 @@ import com.alexgunich.dto.FavoriteDto;
 import com.alexgunich.model.Favorite;
 import com.alexgunich.service.FavoriteService;
 import com.alexgunich.util.DtoConverter;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,7 @@ public class FavoriteController {
      * @return status 201 - object created.
      */
     @PostMapping
-    public ResponseEntity<Void> createFavorite(@RequestBody FavoriteDto favoriteDto) {
+    public ResponseEntity<Void> createFavorite(@RequestBody @Valid FavoriteDto favoriteDto) {
         logger.info("Creating a new favorite record with data: {}", favoriteDto);
         try {
             favoriteService.createFavorite(dtoConverter.convertToEntity(favoriteDto, Favorite.class));

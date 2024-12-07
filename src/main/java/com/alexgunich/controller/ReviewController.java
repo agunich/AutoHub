@@ -4,6 +4,7 @@ import com.alexgunich.dto.ReviewDto;
 import com.alexgunich.model.Review;
 import com.alexgunich.service.ReviewService;
 import com.alexgunich.util.DtoConverter;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,7 @@ public class ReviewController {
      * @return status 201 - object created.
      */
     @PostMapping
-    public ResponseEntity<Void> createReview(@RequestBody ReviewDto reviewDto) {
+    public ResponseEntity<Void> createReview(@RequestBody @Valid ReviewDto reviewDto) {
         logger.info("Creating a new review with data: {}", reviewDto);
         try {
             reviewService.createReview(dtoConverter.convertToEntity(reviewDto, Review.class));

@@ -65,12 +65,18 @@ public class CarController {
         logger.info("Fetching car with ID: {}", id);
         try {
             Car car = carService.getCarById(id);
+            if (car == null) {
+                throw new RuntimeException("Car not found with ID: " + id);
+            }
             CarDto carDto = dtoConverter.convertToDto(car, CarDto.class);
             logger.debug("Found car with ID: {}", id);
             return carDto;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Car with ID {} not found: {}", id, e.getMessage());
-            throw new RuntimeException("Car not found with ID: " + id);
+            throw e; // Let the exception be caught by @ControllerAdvice
+        } catch (Exception e) {
+            logger.error("Error fetching car with ID {}: {}", id, e.getMessage());
+            throw new RuntimeException("Failed to fetch car with ID: " + id);
         }
     }
 
