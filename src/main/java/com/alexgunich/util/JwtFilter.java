@@ -2,6 +2,8 @@ package com.alexgunich.util;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +40,8 @@ public class JwtFilter extends OncePerRequestFilter {
      * @throws IOException ошибка ввода/вывода
      */
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String token = request.getHeader("Authorization");
@@ -57,6 +61,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 var authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                logger.info("Установлена аутентификация для пользователя: " + username);
+            } else {
+                logger.error("Токен невалиден для пользователя: " + username);
             }
         }
 

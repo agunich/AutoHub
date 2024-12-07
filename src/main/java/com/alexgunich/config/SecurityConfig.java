@@ -58,12 +58,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                // Разрешаем доступ к публичным URL
-                .requestMatchers("/auth/register", "/auth/login").permitAll()
-                .requestMatchers(HttpMethod.GET, "/cars/**").permitAll()  // Разрешаем доступ к чтению данных о машинах
+                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll() // Разрешаем доступ к этим маршрутам
+                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()  // Разрешаем доступ ко всем GET-запросам
                 .anyRequest().authenticated()  // Все остальные запросы требуют аутентификации
                 .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);  // Добавление фильтра JWT
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);  // Добавляем фильтр JWT
 
         return http.build();
     }

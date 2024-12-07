@@ -46,6 +46,7 @@ public class User {
      * Роль пользователя, которая определяет его права в системе.
      */
     @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     /**

@@ -15,7 +15,6 @@ import java.util.List;
  * Контроллер для работы с автомобилями.
  * Обрабатывает входящие HTTP-запросы и вызывает методы CarService.
  */
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/cars")
 public class CarController {

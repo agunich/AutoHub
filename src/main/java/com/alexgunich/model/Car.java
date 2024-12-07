@@ -66,6 +66,8 @@ public class Car {
      * Статус автомобиля.
      * Значение из перечисления Status.
      */
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     /**
