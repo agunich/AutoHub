@@ -38,11 +38,12 @@ public class CarService {
         logger.info("Fetching all cars from the database");
         try {
             List<Car> cars = carRepository.findAll();
-            logger.debug("Found {} cars", cars.size());
+            logger.debug("Successfully fetched {} cars from the database", cars.size());
             return cars;
         } catch (Exception e) {
-            logger.error("Error fetching all cars: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to fetch all cars", e);
+            String errorMessage = "Failed to fetch cars from the database.";
+            logger.error("{} Cause: {}", errorMessage, e.getMessage(), e);
+            throw new RuntimeException(errorMessage, e);
         }
     }
 
@@ -54,19 +55,20 @@ public class CarService {
      */
     @Cacheable(value = "cars", key = "#id")
     public Car getCarById(Long id) {
-        logger.info("Fetching car with ID: {}", id);
+        logger.info("Fetching car with ID {}", id);
         try {
             return carRepository.findById(id)
                     .orElseThrow(() -> {
-                        logger.error("Car with ID {} not found", id);
-                        return new EntityNotFoundException("Car with ID " + id + " not found");
+                        String notFoundMessage = "Car with ID " + id + " was not found.";
+                        logger.warn(notFoundMessage);
+                        return new EntityNotFoundException(notFoundMessage);
                     });
         } catch (EntityNotFoundException e) {
-            logger.warn("Car with ID {} not found: {}", id, e.getMessage());
             throw e;
         } catch (Exception e) {
-            logger.error("Error fetching car with ID {}: {}", id, e.getMessage(), e);
-            throw new RuntimeException("Failed to fetch car with ID: " + id, e);
+            String errorMessage = "An error occurred while fetching car with ID " + id;
+            logger.error("{} Cause: {}", errorMessage, e.getMessage(), e);
+            throw new RuntimeException(errorMessage, e);
         }
     }
 
@@ -78,38 +80,40 @@ public class CarService {
      */
     @CachePut(value = "cars", key = "#result.id")
     public Car createCar(Car car) {
-        logger.info("Creating a new car: {}", car);
+        logger.info("Creating a new car");
         try {
             Car savedCar = carRepository.save(car);
-            logger.debug("Car created with ID: {}", savedCar.getId());
+            logger.debug("Successfully created a car with ID {}", savedCar.getId());
             return savedCar;
         } catch (Exception e) {
-            logger.error("Error creating a new car: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to create a new car", e);
+            String errorMessage = "Failed to create a new car.";
+            logger.error("{} Cause: {}", errorMessage, e.getMessage(), e);
+            throw new RuntimeException(errorMessage, e);
         }
     }
 
     /**
-     * Delete a car by its ID and update the cache.
+     * Delete a car by its ID.
      *
      * @param id the ID of the car to delete.
      */
     public void deleteCar(Long id) {
-        logger.info("Deleting car with ID: {}", id);
+        logger.info("Deleting car with ID {}", id);
         try {
             if (!carRepository.existsById(id)) {
-                logger.error("Car with ID {} not found", id);
-                throw new EntityNotFoundException("Car with ID " + id + " not found");
+                String notFoundMessage = "Car with ID " + id + " does not exist.";
+                logger.warn(notFoundMessage);
+                throw new EntityNotFoundException(notFoundMessage);
             }
 
             carRepository.deleteById(id);
-            logger.debug("Car with ID {} has been deleted", id);
+            logger.debug("Successfully deleted car with ID {}", id);
         } catch (EntityNotFoundException e) {
-            logger.warn("Cannot delete car: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            logger.error("Error deleting car with ID {}: {}", id, e.getMessage(), e);
-            throw new RuntimeException("Failed to delete car with ID: " + id, e);
+            String errorMessage = "An error occurred while deleting car with ID " + id;
+            logger.error("{} Cause: {}", errorMessage, e.getMessage(), e);
+            throw new RuntimeException(errorMessage, e);
         }
     }
 }

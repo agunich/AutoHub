@@ -73,7 +73,7 @@ public class CarController {
             return carDto;
         } catch (RuntimeException e) {
             logger.error("Car with ID {} not found: {}", id, e.getMessage());
-            throw e; // Let the exception be caught by @ControllerAdvice
+            throw e;
         } catch (Exception e) {
             logger.error("Error fetching car with ID {}: {}", id, e.getMessage());
             throw new RuntimeException("Failed to fetch car with ID: " + id);

@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CarDto {
+    @NotNull
+    private Long id;
 
     /**
      * The ID of the user who owns the car.
